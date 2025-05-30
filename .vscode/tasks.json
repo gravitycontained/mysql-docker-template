@@ -18,7 +18,7 @@
     {
       "label": "Stop & Remove Container",
       "type": "shell",
-      "command": "docker stop mysql-template-db && docker rm mysql-template-db",
+      "command": "docker stop mysql-template-db && docker rm mysql-template-db && docker volume rm mysql-data",
       "problemMatcher": []
     },
     {

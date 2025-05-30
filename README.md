@@ -135,6 +135,6 @@ The `.vscode/tasks.json` file includes these ready-to-use tasks:
 
 - **Build MySQL Docker Image** → builds the Docker image (`mysql-vscode`)
 - **Run MySQL Container** → starts MySQL with port 3307 and persistent volume
-- **Stop & Remove MySQL Container** → stops and removed the running MySQL container (volume remains unless removed manually)
+- **Stop & Remove MySQL Container** → stops and removed the running MySQL container, and clears the volume
 
 Launch with `Tasks: Run Task` from the Command Palette.
