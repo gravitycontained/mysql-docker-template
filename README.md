@@ -15,10 +15,10 @@ This project builds a custom MySQL Docker image that automatically initializes a
 From the project root (where this `Dockerfile` lives), run:
 
 ```bash
-docker build -t mysql-adde .
+docker build -t mysql-template .
 ```
 
-This creates an image named `mysql-adde` that includes your database scripts.
+This creates an image named `mysql-template` that includes your database scripts.
 
 > [!TIP]
 > Use the VS Code task:
@@ -35,10 +35,10 @@ Start a container with:
 ```bash
 docker run -d \
   --env-file .env \
-  --name mysql-adde-db \
+  --name mysql-template-db \
   -p 127.0.0.1:3307:3306 \
   -v mysql-data:/var/lib/mysql \
-  mysql-adde
+  mysql-template
 ```
 
 > [!TIP]
@@ -58,7 +58,7 @@ docker run -d \
 Once the container is running, connect and check:
 
 ```bash
-set -a && source .env && set +a && docker exec -it mysql-adde-db mysql -uroot -p$MYSQL_ROOT_PASSWORD
+set -a && source .env && set +a && docker exec -it mysql-template-db mysql -uroot -p$MYSQL_ROOT_PASSWORD
 ```
 
 Inside the MySQL CLI, run:
@@ -72,7 +72,7 @@ You should see your expected database(s).
 To run any additional SQL script manually:
 
 ```bash
-docker exec -i mysql-adde-db mysql -uroot -p$MYSQL_ROOT_PASSWORD < path/to/script.sql
+docker exec -i mysql-template-db mysql -uroot -p$MYSQL_ROOT_PASSWORD < path/to/script.sql
 ```
 
 ---
@@ -112,8 +112,8 @@ Use the VS Code task:
 Or manually run:
 
 ```bash
-docker stop mysql-adde-db
-docker rm mysql-adde-db
+docker stop mysql-template-db
+docker rm mysql-template-db
 docker volume rm mysql-data
 ```
 
@@ -134,7 +134,7 @@ Defined in `.vscode/tasks.json`:
         "color": "terminal.ansiYellow"
       },
       "type": "shell",
-      "command": "docker build -t mysql-adde .",
+      "command": "docker build -t mysql-template .",
       "problemMatcher": []
     },
     {
@@ -144,7 +144,7 @@ Defined in `.vscode/tasks.json`:
         "color": "terminal.ansiWhite"
       },
       "type": "shell",
-      "command": "docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
+      "command": "docker build -t mysql-template . && docker run --env-file .env -d --name mysql-template-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-template",
       "problemMatcher": [],
       "detail": "Builds the MySQL image with embedded SQL scripts and runs the container"
     },
@@ -155,7 +155,7 @@ Defined in `.vscode/tasks.json`:
         "color": "terminal.ansiWhite"
       },
       "type": "shell",
-      "command": "docker stop mysql-adde-db && docker rm mysql-adde-db && docker volume rm mysql-data",
+      "command": "docker stop mysql-template-db && docker rm mysql-template-db && docker volume rm mysql-data",
       "problemMatcher": []
     },
     {
@@ -165,7 +165,7 @@ Defined in `.vscode/tasks.json`:
         "color": "terminal.ansiCyan"
       },
       "type": "shell",
-      "command": "docker stop mysql-adde-db || true && docker rm mysql-adde-db || true && docker volume rm mysql-data || true && docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
+      "command": "docker stop mysql-template-db || true && docker rm mysql-template-db || true && docker volume rm mysql-data || true && docker build -t mysql-template . && docker run --env-file .env -d --name mysql-template-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-template",
       "problemMatcher": []
     }
   ]

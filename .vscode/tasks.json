@@ -8,7 +8,7 @@
         "color": "terminal.ansiYellow"
       },
       "type": "shell",
-      "command": "docker build -t mysql-adde .",
+      "command": "docker build -t mysql-template .",
       "problemMatcher": []
     },
     {
@@ -18,7 +18,7 @@
         "color": "terminal.ansiWhite"
       },
       "type": "shell",
-      "command": "docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
+      "command": "docker build -t mysql-template . && docker run --env-file .env -d --name mysql-template-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-template",
       "problemMatcher": [],
       "detail": "Builds the MySQL image with embedded SQL scripts and runs the container"
     },
@@ -29,7 +29,7 @@
         "color": "terminal.ansiWhite"
       },
       "type": "shell",
-      "command": "docker stop mysql-adde-db && docker rm mysql-adde-db && docker volume rm mysql-data",
+      "command": "docker stop mysql-template-db && docker rm mysql-template-db && docker volume rm mysql-data",
       "problemMatcher": []
     },
     {
@@ -39,7 +39,7 @@
         "color": "terminal.ansiCyan"
       },
       "type": "shell",
-      "command": "docker stop mysql-adde-db || true && docker rm mysql-adde-db || true && docker volume rm mysql-data || true && docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
+      "command": "docker stop mysql-template-db || true && docker rm mysql-template-db || true && docker volume rm mysql-data || true && docker build -t mysql-template . && docker run --env-file .env -d --name mysql-template-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-template",
       "problemMatcher": []
     }
   ]
