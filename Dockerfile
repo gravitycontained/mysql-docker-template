@@ -1,5 +1,8 @@
 # Use official MySQL image
-FROM mysql:8
+FROM mysql:8.0
 
-# Copy all SQL scripts into the init directory
+# Set the authentication plugin in a config file
+COPY .cnf /etc/mysql/conf.d/.cnf
+
+# Copy SQL files into init folder
 COPY database/ /docker-entrypoint-initdb.d/
