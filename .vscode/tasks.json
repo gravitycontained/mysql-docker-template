@@ -7,6 +7,9 @@
         "id": "inbox",
         "color": "terminal.ansiYellow"
       },
+      "type": "shell",
+      "command": "docker build -t mysql-adde .",
+      "problemMatcher": []
     },
     {
       "label": "Build Image and Run",
@@ -30,14 +33,14 @@
       "problemMatcher": []
     },
     {
-      "label": "Update volumes",
+      "label": "Recreate (with volume reset)",
       "icon": {
         "id": "sync",
         "color": "terminal.ansiCyan"
       },
       "type": "shell",
-      "command": "docker compose down -v && docker compose up --build",
+      "command": "docker stop mysql-adde-db || true && docker rm mysql-adde-db || true && docker volume rm mysql-data || true && docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
       "problemMatcher": []
-    },
+    }
   ]
 }
