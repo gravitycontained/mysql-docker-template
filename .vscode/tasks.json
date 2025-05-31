@@ -3,34 +3,40 @@
   "tasks": [
     {
       "label": "Build Image",
-      "type": "shell",
-      "command": "docker build -t mysql-template .",
-      "problemMatcher": [],
-      "detail": "Builds the MySQL image with embedded SQL scripts"
+      "icon": {
+        "id": "inbox",
+        "color": "terminal.ansiYellow"
+      },
     },
     {
-      "label": "Run Container",
+      "label": "Build Image and Run",
+      "icon": {
+        "id": "play",
+        "color": "terminal.ansiWhite"
+      },
       "type": "shell",
-      "command": "docker run --env-file .env -d --name mysql-template-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-template",
+      "command": "docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
       "problemMatcher": [],
-      "detail": "Runs the MySQL container using your mysql-template image"
+      "detail": "Builds the MySQL image with embedded SQL scripts and runs the container"
     },
     {
-      "label": "Stop & Remove Container",
+      "label": "Clear all",
+      "icon": {
+        "id": "trash",
+        "color": "terminal.ansiWhite"
+      },
       "type": "shell",
-      "command": "docker stop mysql-template-db && docker rm mysql-template-db && docker volume rm mysql-data",
+      "command": "docker stop mysql-adde-db && docker rm mysql-adde-db && docker volume rm mysql-data",
       "problemMatcher": []
     },
     {
-      "label": "Stop Container",
+      "label": "Update volumes",
+      "icon": {
+        "id": "sync",
+        "color": "terminal.ansiCyan"
+      },
       "type": "shell",
-      "command": "docker stop mysql-template-db",
-      "problemMatcher": []
-    },
-    {
-      "label": "Remove Container",
-      "type": "shell",
-      "command": "docker rm mysql-template-db",
+      "command": "docker compose down -v && docker compose up --build",
       "problemMatcher": []
     },
   ]
