@@ -1,12 +1,13 @@
 # MySQL Docker Setup with Auto-Init Databases
 
-This project builds a custom MySQL Docker image that automatically initializes any database from `database`.
+This project builds a custom MySQL Docker image that automatically initializes any database from the `database/` folder.
 
 ---
 
 ## Prerequisites
 
-- Docker installed
+* Docker installed
+
 ---
 
 ## 1. Build the Docker Image
@@ -14,15 +15,16 @@ This project builds a custom MySQL Docker image that automatically initializes a
 From the project root (where this `Dockerfile` lives), run:
 
 ```bash
-docker build -t mysql-vscode .
+docker build -t mysql-adde .
 ```
 
-This creates an image named `mysql-vscode` that includes your database scripts.
+This creates an image named `mysql-adde` that includes your database scripts.
 
 > [!TIP]
-> use the VS Code task:
-> - Press `Ctrl+Shift+P` → `Tasks: Run Task`
-> - Choose `Build Image`
+> Use the VS Code task:
+>
+> * Press `Ctrl+Shift+P` → `Tasks: Run Task`
+> * Choose `Build Image`
 
 ---
 
@@ -33,21 +35,21 @@ Start a container with:
 ```bash
 docker run -d \
   --env-file .env \
-  --name mysql-template-db \
+  --name mysql-adde-db \
   -p 127.0.0.1:3307:3306 \
-  -v mysql-data:/var/lib/mysql-template \
-  mysql-template
+  -v mysql-data:/var/lib/mysql \
+  mysql-adde
 ```
 
 > [!TIP]
-> use the VS Code task:
-> - Press `Ctrl+Shift+P` → `Tasks: Run Task`
-> - Choose `Run Container`
+> Use the VS Code task:
+>
+> * Press `Ctrl+Shift+P` → `Tasks: Run Task`
+> * Choose `Build Image and Run`
 
-
-- `-p 127.0.0.1:3307:3306` maps MySQL’s port 3306 inside the container to port 3307 on your host.
-- `-v mysql-data:/var/lib/mysql-template` creates a named volume (`mysql-template`) to persist database files between restarts.
-- On first startup, MySQL will automatically execute all `.sql` files in `/docker-entrypoint-initdb.d` (our copied `database/` scripts), creating and populating the databases.
+* `-p 127.0.0.1:3307:3306` maps MySQL’s port 3306 inside the container to port 3307 on your host.
+* `-v mysql-data:/var/lib/mysql` creates a named volume to persist database files between restarts.
+* On first startup, MySQL will automatically execute all `.sql` files in `/docker-entrypoint-initdb.d` (our copied `database/` scripts), creating and populating the databases.
 
 ---
 
@@ -56,7 +58,7 @@ docker run -d \
 Once the container is running, connect and check:
 
 ```bash
-set -a && source .env && set +a && docker exec -it mysql-template-db mysql -uroot -p$MYSQL_ROOT_PASSWORD
+set -a && source .env && set +a && docker exec -it mysql-adde-db mysql -uroot -p$MYSQL_ROOT_PASSWORD
 ```
 
 Inside the MySQL CLI, run:
@@ -65,20 +67,12 @@ Inside the MySQL CLI, run:
 SHOW DATABASES;
 ```
 
-You should see:
+You should see your expected database(s).
 
-```
-+--------------------+
-| Database           |
-+--------------------+
-| Test               |
-+--------------------+
-```
+To run any additional SQL script manually:
 
-in general, you can run any sql script with the following command:
-
-```
-docker exec -i mysql mysql -uroot -ptest < scripts\test.sql
+```bash
+docker exec -i mysql-adde-db mysql -uroot -p$MYSQL_ROOT_PASSWORD < path/to/script.sql
 ```
 
 ---
@@ -91,13 +85,13 @@ Install the **MySQL** extension by **cweijan**.
 
 Use these connection settings:
 
-| Field       | Value           |
-|-------------|-----------------|
-| Host        | `127.0.0.1`     |
-| Port        | `3307`          |
-| Username    | `root`          |
-| Password    | `test`          |
-| Database    | *(any or leave blank)* |
+| Field    | Value                  |
+| -------- | ---------------------- |
+| Host     | `127.0.0.1`            |
+| Port     | `3307`                 |
+| Username | `root` or `admin`      |
+| Password | from `.env`            |
+| Database | *(any or leave blank)* |
 
 Open a new query tab and run SQL—results will show up in a nice table view.
 
@@ -111,30 +105,78 @@ Open a new query tab and run SQL—results will show up in a nice table view.
 
 ## 5. Cleanup / Reset
 
-You can use the VS Code tasks:
+Use the VS Code task:
 
-- `Stop & Remove MySQL Container`
+* `Clear all`
 
 Or manually run:
 
 ```bash
-docker stop mysql
-
-docker rm mysql
-
+docker stop mysql-adde-db
+docker rm mysql-adde-db
 docker volume rm mysql-data
 ```
-
-Restarting with the same commands or tasks will reinitialize from scratch.
 
 ---
 
 ## 6. VS Code Tasks
 
-The `.vscode/tasks.json` file includes these ready-to-use tasks:
+Defined in `.vscode/tasks.json`:
 
-- **Build MySQL Docker Image** → builds the Docker image (`mysql-vscode`)
-- **Run MySQL Container** → starts MySQL with port 3307 and persistent volume
-- **Stop & Remove MySQL Container** → stops and removed the running MySQL container, and clears the volume
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Image",
+      "icon": {
+        "id": "inbox",
+        "color": "terminal.ansiYellow"
+      },
+      "type": "shell",
+      "command": "docker build -t mysql-adde .",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Image and Run",
+      "icon": {
+        "id": "play",
+        "color": "terminal.ansiWhite"
+      },
+      "type": "shell",
+      "command": "docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
+      "problemMatcher": [],
+      "detail": "Builds the MySQL image with embedded SQL scripts and runs the container"
+    },
+    {
+      "label": "Clear all",
+      "icon": {
+        "id": "trash",
+        "color": "terminal.ansiWhite"
+      },
+      "type": "shell",
+      "command": "docker stop mysql-adde-db && docker rm mysql-adde-db && docker volume rm mysql-data",
+      "problemMatcher": []
+    },
+    {
+      "label": "Recreate (with volume reset)",
+      "icon": {
+        "id": "sync",
+        "color": "terminal.ansiCyan"
+      },
+      "type": "shell",
+      "command": "docker stop mysql-adde-db || true && docker rm mysql-adde-db || true && docker volume rm mysql-data || true && docker build -t mysql-adde . && docker run --env-file .env -d --name mysql-adde-db -p 127.0.0.1:3307:3306 -v mysql-data:/var/lib/mysql mysql-adde",
+      "problemMatcher": []
+    }
+  ]
+}
+```
 
 Launch with `Tasks: Run Task` from the Command Palette.
+
+---
+
+## Notes
+
+* The `database/` folder is copied into the image and any `.sql` file inside is executed **once** during first-time initialization of the container volume.
+* Grant permissions and `CREATE DATABASE` commands should be included in one of the `.sql` files, usually `create.sql`.
